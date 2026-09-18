@@ -1,32 +1,27 @@
 import { useNavigate } from "react-router";
-import { baseURL } from '../config';
 import { useForm } from "react-hook-form";
 import type { UserNamespace } from "../Types/User";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { registerSchema } from "../Schemas/UserScheme";
+import { post } from "../Services/api";
 
 export const Register = () => {
   const navigate = useNavigate();
-  const {register, handleSubmit, formState:{errors}} = useForm<UserNamespace.RegisterRequest>({
-    resolver: joiResolver(registerSchema)
-  })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserNamespace.RegisterRequest>({
+    resolver: joiResolver(registerSchema),
+  });
 
-  async function onSubmit(obj : UserNamespace.RegisterRequest) {
-    const response = await fetch(`${baseURL}user/register`, {
-      method: "POST",
-      headers: {
-        Origin: window.location.host,
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(obj),
-    });
-    const data = await response.json();
-    if(response.status == 200){
-        navigate("/login")
-    }else{
-      console.log(data)
-    alert(`Error ${data.message}`)
+  async function onSubmit(obj: UserNamespace.RegisterRequest) {
+    const response = await post("user/register", obj);
+    if (!response.ok) {
+      alert(`Error ${response.message}`);
+      return;
     }
+    navigate("/login");
   }
   return (
     <div>
@@ -35,7 +30,7 @@ export const Register = () => {
         <div>
           <label>Username</label>
           <input
-            {...register("name", {required:true, maxLength:20})}
+            {...register("name", { required: true, maxLength: 20 })}
             placeholder="Enter your name"
             className="border-2 w-full"
           />
@@ -43,20 +38,21 @@ export const Register = () => {
 
           <label>Email</label>
           <input
-          {...register("email", {required:true})}
+            {...register("email", { required: true })}
             placeholder="Enter your email"
             className="border-2 w-full"
           />
-           {errors.email && <p className="text-red-700">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="text-red-700">{errors.email.message}</p>
+          )}
 
           <label>Password</label>
           <input
-          {...register("password", {required: true})}
+            {...register("password", { required: true })}
             placeholder="Enter your password"
             className="border-2 w-full"
           />
           {errors.password && <p>{errors.password.message}</p>}
-
         </div>
         <span className="flex flex-row">
           <p>Already have account ?</p>

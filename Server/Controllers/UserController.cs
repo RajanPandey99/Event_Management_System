@@ -42,7 +42,7 @@ namespace Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(new { Message = "Invalid data" });
             }
             try
             {

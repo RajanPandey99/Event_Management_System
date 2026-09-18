@@ -16,9 +16,12 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, [FromHeader] string Id)
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, [FromHeader] string? Id)
         {
-            Console.WriteLine(Id);
+            if (string.IsNullOrEmpty(Id))
+            {
+                return Unauthorized(new { Message = "User is not authenticated" });
+            }
             int userId = int.Parse(Id);
             if (!ModelState.IsValid)
             {
@@ -59,8 +62,13 @@ namespace Server.Controllers
         }
 
         [HttpGet("posted")]
-        public async Task<IActionResult> GetPostedEvents([FromHeader] string Id)
+        public async Task<IActionResult> GetPostedEvents([FromHeader] string? Id)
         {
+            if (string.IsNullOrEmpty(Id))
+            {
+                return Unauthorized(new { Message = "User is not authenticated" });
+            }
+
             int userId = int.Parse(Id);
             try
             {

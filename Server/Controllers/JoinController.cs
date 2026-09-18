@@ -17,12 +17,11 @@ namespace Server.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> JoinEvent([FromBody] int eventId, [FromHeader] string Id)
+        public async Task<IActionResult> JoinEvent([FromBody] int eventId, [FromHeader] string? Id)
         {
-            Console.WriteLine("Event id " + eventId + "User id " + Id);
-            if (Id == null)
+            if (string.IsNullOrEmpty(Id))
             {
-                return BadRequest("User id not provided");
+                return Unauthorized(new { Message = "User is not authenticated" });
             }
             int userId = int.Parse(Id);
             try
@@ -43,9 +42,9 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEventsByJoin([FromHeader] string? Id)
         {
-            if (Id == null)
+            if (string.IsNullOrEmpty(Id))
             {
-                return BadRequest("User id not provided");
+                return Unauthorized(new { Message = "User is not authenticated" });
             }
             int userId = int.Parse(Id);
             try

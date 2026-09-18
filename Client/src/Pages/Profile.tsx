@@ -1,70 +1,35 @@
 import { useEffect, useState } from "react";
 import type { UserNamespace } from "../Types/User";
 import type { Events } from "../Types/Events";
-import { baseURL } from '../config';
 import { EventsGrid } from "../Components/EventsGrid";
+import { get } from "../Services/api";
+import { getUser } from "../Services/getUser";
 
 export const Profile = () => {
-  const [user, setUser] = useState<UserNamespace.User>(() => {
-    const userData = localStorage.getItem("userData");
-    return userData
-      ? JSON.parse(userData)
-      : {
-          id: -1,
-          name: "",
-          email: "",
-        };
-  });
+  const user : UserNamespace.User = getUser();
   const [postedevents, setPostedevents] = useState<Events.EventResponse[]>([]);
   const [joinedEvents, setJoinedevents] = useState<Events.EventResponse[]>(
     [],
   );
 
   async function getPostedEvents() {
-    const userId = String(user.id);
-    try {
-      const response = await fetch(`${baseURL}event/posted`, {
-        method: "GET",
-        headers: {
-          Id: userId,
-          "Content-type": "application/json",
-          Origin: window.location.host,
-        },
-      });
-      if (!response) {
-        alert("Unable to fetch events");
+    const response = await get<Events.EventResponse[]>("event/posted", user.id);
+     if (!response.ok) {
+        alert(`Error ${response.message}`);
         return;
       }
-      const event = await response.json();
-      console.log(event);
+      const event = response.data ?? [];
       setPostedevents(event);
-    } catch (error) {
-      console.error(error);
-      alert("Unable to fetch events");
-    }
   }
 
   async function geJoinedEvents() {
-    const userId = String(user.id);
-    try {
-      const response = await fetch(`${baseURL}join`, {
-        method: "GET",
-        headers: {
-          Id: userId,
-          "Content-type": "application/json",
-          Origin: window.location.host,
-        },
-      });
-      if (!response) {
-        alert("Unable to fetch joined event !");
+    const response = await get<Events.EventResponse[]>("join", user.id);
+      if (!response.ok) {
+        alert(`Error ${response.message}`);
         return;
       }
-      const event = await response.json();
+      const event = response.data ?? [];
       setJoinedevents(event);
-    } catch (error) {
-      console.error(error);
-      alert("Unable to fetch events");
-    }
   }
 
   useEffect(() => {

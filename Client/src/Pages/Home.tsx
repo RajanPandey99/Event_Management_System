@@ -2,56 +2,38 @@ import { useEffect, useState } from "react";
 import type { Events } from "../Types/Events";
 import { useNavigate } from "react-router";
 import type { UserNamespace } from "../Types/User";
-import { baseURL } from '../config';
 import { EventsGrid } from "../Components/EventsGrid";
+import { get } from "../Services/api";
+import { getUser } from "../Services/getUser";
+import { NavigateButton } from "../Components/NavigateButton";
 
 export const Home = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
-  const [user, setUser] = useState<UserNamespace.User>(() => {
-    const userData = localStorage.getItem("userData");
-    return userData
-      ? JSON.parse(userData)
-      : {
-          id: -1,
-          name: "",
-          email: "",
-        };
-  });
+
+  const user: UserNamespace.User = getUser();
   const navigate = useNavigate();
+
   useEffect(() => {
     async function getEvents() {
-      try {
-        const todaysDate = new Date().toLocaleDateString("en-CA");
-        const response = await fetch(
-          `${baseURL}event?date=${todaysDate}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-type": "application/json",
-              Origin: window.location.host,
-            },
-          },
-        );
-        if (!response) {
-          alert("Unable to fetch events");
-          return;
-        }
-        const event = await response.json();
-        setEvents(event);
-      } catch (error) {
-        console.error(error);
+      const todaysDate = new Date().toLocaleDateString("en-CA");
+      const response = await get<Events.EventResponse[]>(
+        `event?date=${todaysDate}`,
+      );
+      if (!response.ok) {
         alert("Unable to fetch events");
+        return;
       }
+      const events = response.data ?? [];
+      setEvents(events);
     }
     getEvents();
   }, []);
   async function joinEvent(eventId: number) {
-    const userData = localStorage.getItem("userData");
-    if (!userData) {
+    const user: UserNamespace.User = getUser();
+    if (user.id == -1) {
       alert("You need to login first to join event !");
       return;
     }
-    const user: UserNamespace.User = JSON.parse(userData);
     const userId = String(user.id);
     try {
       const response = await fetch("https://localhost:7094/api/join", {
@@ -78,27 +60,21 @@ export const Home = () => {
     <div>
       <div className="h-30 w-full flex items-center justify-center gap-5">
         {user.id != -1 && (
-          <button
+          <NavigateButton
             onClick={() => navigate("/addevent")}
-            className="h-full w-40 rounded-3xl bg-blue-300 text-3xl font-bold"
-          >
-            Add Event
-          </button>
+            label="Add Event"
+          />
         )}
         {user.id != -1 && (
-          <button
+          <NavigateButton
             onClick={() => navigate("/profile")}
-            className="h-full w-40 rounded-3xl bg-blue-300 text-3xl font-bold"
-          >
-            View your profile
-          </button>
+            label="View your profile"
+          />
         )}
-        <button
+        <NavigateButton
           onClick={() => navigate("/upcommingevents")}
-          className="h-full w-40 rounded-3xl bg-blue-300 text-3xl font-bold"
-        >
-          View upcomming Events
-        </button>
+          label="View upcomming Events"
+        />
       </div>
 
       <div>
@@ -109,8 +85,7 @@ export const Home = () => {
               <h4>No Events for today</h4>
             </div>
           )}
-          <EventsGrid events={events} onJoinEvent={joinEvent}/>
-    
+          <EventsGrid events={events} onJoinEvent={joinEvent} />
         </div>
       </div>
     </div>

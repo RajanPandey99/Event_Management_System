@@ -2,10 +2,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import type { Events } from "../Types/Events";
 import type { UserNamespace } from "../Types/User";
-import { baseURL } from '../config';
 import { EventsGrid } from "../Components/EventsGrid";
-
-
+import { get, post } from "../Services/api";
 
 export const UpcommingEvents = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
@@ -14,56 +12,33 @@ export const UpcommingEvents = () => {
 
   useEffect(() => {
     async function getEvents() {
-      const response = await fetch(
-        `${baseURL}event?category=${category}&date=${date}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json",
-            Origin: window.location.host,
-          },
-        },
+      const response = await get<Events.EventResponse[]>(
+        `event?category=${category}&date=${date}`,
       );
-      if (response.status != 200) {
-        alert("Unable to fetch events !");
+      if (!response.ok) {
+        alert(`Error : ${response.message}`);
         return;
       }
-      const data = await response.json();
-      setEvents(data);
+      const events = response.data ?? [];
+      setEvents(events);
     }
     getEvents();
   }, [date, category]);
 
-  
-    async function joinEvent(eventId: number) {
-      const userData = localStorage.getItem("userData");
-      if (!userData) {
-        alert("You need to login first to join event !");
-        return;
-      }
-      const user: UserNamespace.User = JSON.parse(userData);
-      const userId = String(user.id);
-      try {
-        const response = await fetch(`${baseURL}join`, {
-          method: "POST",
-          body: JSON.stringify(eventId),
-          headers: {
-            Id: userId,
-            "Content-type": "application/json",
-          },
-        });
-        const data = await response.json();
-        console.log(data);
-        if (response.status != 200) {
-          alert(`Error ${data.message}`);
-          return;
-        }
-        alert(`${data.message}`);
-      } catch (error) {
-        alert("Unable to join event !");
-        console.log(error);
-      }
+  async function joinEvent(eventId: number) {
+    const userData = localStorage.getItem("userData");
+    if (!userData) {
+      alert("You need to login first to join event !");
+      return;
     }
+    const user: UserNamespace.User = JSON.parse(userData);
+    const response = await post("join", eventId, user.id);
+    if (!response.ok) {
+      alert(`Error : ${response.message}`);
+      return;
+    }
+    alert("Event joined succesfully !");
+  }
 
   return (
     <div className="w-full h-140 border-2 rounded-lg p-4 flex flex-col">
@@ -103,7 +78,7 @@ export const UpcommingEvents = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto border-t-2 pt-3">
-        <EventsGrid events={events} onJoinEvent={joinEvent}/>
+        <EventsGrid events={events} onJoinEvent={joinEvent} />
       </div>
     </div>
   );

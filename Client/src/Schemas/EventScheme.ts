@@ -10,7 +10,7 @@ import Joi from "joi";
       "string.max": "Title cannot exceed 100 characters",
     }),
 
-  DateOfEvent: Joi.date()
+  DateOfEvent: Joi.string()
     .required()
     .messages({
       "date.base": "Please enter a valid date",

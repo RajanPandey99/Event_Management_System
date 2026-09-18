@@ -2,7 +2,7 @@
 export namespace Events {
   export interface EventRequest {
     Title: string;
-    DateOfEvent: Date;
+    DateOfEvent: string;
     TimeOfEvent: string;
     Category: string;
     Location: string;

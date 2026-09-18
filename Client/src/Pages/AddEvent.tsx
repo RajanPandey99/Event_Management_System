@@ -1,8 +1,11 @@
 import { joiResolver } from "@hookform/resolvers/joi";
 import type { Events } from "../Types/Events";
-import { baseURL } from "../config";
 import { useForm } from "react-hook-form";
 import { eventRequestSchema } from "../Schemas/EventScheme";
+import type { ApiResponse } from "../Types/ApiResponse";
+import { post } from "../Services/api";
+import type { UserNamespace } from "../Types/User";
+import { getUser } from "../Services/getUser";
 
 export const AddEvent = () => {
   const {
@@ -12,24 +15,13 @@ export const AddEvent = () => {
   } = useForm<Events.EventRequest>({
     resolver: joiResolver(eventRequestSchema),
   });
-
+  const user: UserNamespace.User = getUser();
   async function onSubmit(obj: Events.EventRequest) {
-    const user = localStorage.getItem("userData");
-    if (!user) {
+    if (user.id == -1) {
       alert("Unauthorize to add Event !");
       return;
     }
-    const userData = JSON.parse(user);
-    const userId = String(userData.id);
-    const response = await fetch(`${baseURL}event`, {
-      method: "POST",
-      body: JSON.stringify(obj),
-      headers: {
-        Id: userId,
-        "Content-type": "application/json",
-        Origin: window.location.host,
-      },
-    });
+    const response: ApiResponse.apiresponse<string> = await post("event", obj);
     if (response.status != 200) {
       alert("Unable to post event !");
       return;
@@ -57,7 +49,9 @@ export const AddEvent = () => {
           placeholder="YYYY-MM-DD"
           className="border-2 w-full"
         />
-        {errors.DateOfEvent && <p className="text-red-700">{errors.DateOfEvent.message}</p>}
+        {errors.DateOfEvent && (
+          <p className="text-red-700">{errors.DateOfEvent.message}</p>
+        )}
 
         <label>Time Of Event</label>
         <input
@@ -65,7 +59,9 @@ export const AddEvent = () => {
           placeholder="HH:MM:SS"
           className="border-2 w-full"
         />
-        {errors.TimeOfEvent && <p className="text-red-700">{errors.TimeOfEvent.message}</p>}
+        {errors.TimeOfEvent && (
+          <p className="text-red-700">{errors.TimeOfEvent.message}</p>
+        )}
 
         <label>Category</label>
         <select
@@ -82,7 +78,9 @@ export const AddEvent = () => {
           <option value="Exhibition">Exhibition</option>
           <option value="Other">Other</option>
         </select>
-        {errors.Category && <p className="text-red-700">{errors.Category.message}</p>}
+        {errors.Category && (
+          <p className="text-red-700">{errors.Category.message}</p>
+        )}
 
         <label>Location</label>
         <input
@@ -90,11 +88,15 @@ export const AddEvent = () => {
           placeholder="ex: Bhopal"
           className="border-2 w-full"
         />
-        {errors.Location && <p className="text-red-700">{errors.Location.message}</p>}
+        {errors.Location && (
+          <p className="text-red-700">{errors.Location.message}</p>
+        )}
 
         <label>Description</label>
         <textarea {...register("Description")} className="border-2 w-full" />
-        {errors.Description && <p className="text-red-700">{errors.Description.message}</p>}
+        {errors.Description && (
+          <p className="text-red-700">{errors.Description.message}</p>
+        )}
 
         <div className="flex justify-center items-center mt-5">
           <button
