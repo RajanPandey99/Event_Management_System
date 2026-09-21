@@ -4,6 +4,7 @@ import type { UserNamespace } from "../Types/User";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { registerSchema } from "../Schemas/UserScheme";
 import { post } from "../Services/api";
+import { toast } from "react-toastify";
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export const Register = () => {
   async function onSubmit(obj: UserNamespace.RegisterRequest) {
     const response = await post("user/register", obj);
     if (!response.ok) {
-      alert(`Error ${response.message}`);
+      toast.error(`Error ${response.message}`);
       return;
     }
     navigate("/login");

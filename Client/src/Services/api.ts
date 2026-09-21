@@ -9,9 +9,10 @@ export async function post<T>(url: string, body: unknown, userId?: number) {
   return await request<T>("POST", url, body, userId);
 }
 
-export async function put<T>(url: string, body: unknown, userId?: number) {
-  return await request<T>("PUT", url, body, userId);
+export async function del<T>(url: string, body: unknown, userId?: number) {
+  return await request<T>("DELETE", url, body, userId);
 }
+
 
 async function request<T>(
   method: string,

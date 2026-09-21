@@ -4,6 +4,8 @@ import type { Events } from "../Types/Events";
 import type { UserNamespace } from "../Types/User";
 import { EventsGrid } from "../Components/EventsGrid";
 import { get, post } from "../Services/api";
+import { getUser } from "../Services/getUser";
+import { toast } from "react-toastify";
 
 export const UpcommingEvents = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
@@ -16,7 +18,7 @@ export const UpcommingEvents = () => {
         `event?category=${category}&date=${date}`,
       );
       if (!response.ok) {
-        alert(`Error : ${response.message}`);
+        toast.error(`Error : ${response.message}`);
         return;
       }
       const events = response.data ?? [];
@@ -26,18 +28,22 @@ export const UpcommingEvents = () => {
   }, [date, category]);
 
   async function joinEvent(eventId: number) {
-    const userData = localStorage.getItem("userData");
-    if (!userData) {
-      alert("You need to login first to join event !");
+    const user: UserNamespace.User = getUser();
+    if (user.id == -1) {
+      toast.error("You need to login first to join event !");
       return;
     }
-    const user: UserNamespace.User = JSON.parse(userData);
     const response = await post("join", eventId, user.id);
     if (!response.ok) {
-      alert(`Error : ${response.message}`);
+      toast.error(`Error : ${response.message}`);
       return;
     }
-    alert("Event joined succesfully !");
+    setEvents((prevEvent) =>
+      prevEvent.map((e) =>
+        e.id == eventId ? { ...e, count: e.count + 1 } : e,
+      ),
+    );
+    toast.success("Event joined succesfully !");
   }
 
   return (

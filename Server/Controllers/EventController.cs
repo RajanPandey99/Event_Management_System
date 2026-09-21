@@ -14,7 +14,6 @@ namespace Server.Controllers
         {
             _eventService = eventService;
         }
-
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, [FromHeader] string? Id)
         {

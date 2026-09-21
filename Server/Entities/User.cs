@@ -7,13 +7,13 @@ namespace Server.Entities
     public sealed class User
     {
         [Key]
-        public int Id { get; init; }
-        public required string Name { get; init; }
+        public int Id { get; set; }
+        public required string Name { get; set; }
 
         [EmailAddress]
-        public required string Email { get; init; }
+        public required string Email { get; set; }
 
         [Required]
-        public required string Password { get; init; }
+        public required string Password { get; set; }
     }
 }

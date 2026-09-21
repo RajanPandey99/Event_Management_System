@@ -4,6 +4,7 @@ import type { Events } from "../Types/Events";
 import { EventsGrid } from "../Components/EventsGrid";
 import { get } from "../Services/api";
 import { getUser } from "../Services/getUser";
+import { toast } from "react-toastify";
 
 export const Profile = () => {
   const user : UserNamespace.User = getUser();
@@ -15,7 +16,7 @@ export const Profile = () => {
   async function getPostedEvents() {
     const response = await get<Events.EventResponse[]>("event/posted", user.id);
      if (!response.ok) {
-        alert(`Error ${response.message}`);
+        toast.error(`Error ${response.message}`);
         return;
       }
       const event = response.data ?? [];
@@ -25,7 +26,7 @@ export const Profile = () => {
   async function geJoinedEvents() {
     const response = await get<Events.EventResponse[]>("join", user.id);
       if (!response.ok) {
-        alert(`Error ${response.message}`);
+        toast.error(`Error ${response.message}`);
         return;
       }
       const event = response.data ?? [];
@@ -38,7 +39,7 @@ export const Profile = () => {
       await geJoinedEvents();
     }
     loadData();
-  }, []);
+  }, []);  
 
   return (
     <div>
@@ -55,6 +56,7 @@ export const Profile = () => {
           <h2 className="text-lg font-semibold">Events you have joined</h2>
     
            <EventsGrid events={joinedEvents}/>
+           
         </div>
       </div>
     </div>

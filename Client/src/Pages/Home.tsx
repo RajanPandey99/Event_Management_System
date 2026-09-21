@@ -3,14 +3,18 @@ import type { Events } from "../Types/Events";
 import { useNavigate } from "react-router";
 import type { UserNamespace } from "../Types/User";
 import { EventsGrid } from "../Components/EventsGrid";
-import { get } from "../Services/api";
+import { get, post } from "../Services/api";
 import { getUser } from "../Services/getUser";
 import { NavigateButton } from "../Components/NavigateButton";
+import { toast } from "react-toastify";
+
 
 export const Home = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
-
-  const user: UserNamespace.User = getUser();
+  const [user, setUser] = useState<UserNamespace.User | null>(() => {
+    const data = getUser();
+    return data.id != -1 ? data : null;
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,53 +32,59 @@ export const Home = () => {
     }
     getEvents();
   }, []);
+  
   async function joinEvent(eventId: number) {
     const user: UserNamespace.User = getUser();
     if (user.id == -1) {
-      alert("You need to login first to join event !");
+      toast.error("UnAuthorized user !");
       return;
     }
-    const userId = String(user.id);
     try {
-      const response = await fetch("https://localhost:7094/api/join", {
-        method: "POST",
-        body: JSON.stringify(eventId),
-        headers: {
-          Id: userId,
-          "Content-type": "application/json",
-        },
-      });
-      const data = await response.json();
-      console.log(data);
+      const response = await post("join", eventId, user.id);
       if (response.status != 200) {
-        alert(`Error ${data.message}`);
+        toast.error(`Error:  ${response.message}`);
         return;
       }
-      alert(`${data.message}`);
+
+      toast.success("Event joined succesfully !");
+
+      setEvents((prevEvent) =>
+        prevEvent.map((e) =>
+          e.id == eventId ? { ...e, count: e.count + 1 } : e,
+        ),
+      );
     } catch (error) {
-      alert("Unable to join event !");
-      console.log(error);
+      alert(`Unable to join event ! ${error}`);
     }
+  }
+  function logOutUser() {
+    localStorage.removeItem("userData");
+    setUser(null);
+    toast.success("User log out succesfully !");
   }
   return (
     <div>
       <div className="h-30 w-full flex items-center justify-center gap-5">
-        {user.id != -1 && (
+        {user && (
           <NavigateButton
             onClick={() => navigate("/addevent")}
             label="Add Event"
           />
         )}
-        {user.id != -1 && (
+        {user && (
           <NavigateButton
             onClick={() => navigate("/profile")}
-            label="View your profile"
+            label="View your Profile"
           />
         )}
         <NavigateButton
           onClick={() => navigate("/upcommingevents")}
           label="View upcomming Events"
         />
+        {!user && (
+          <NavigateButton onClick={() => navigate("/login")} label="Login" />
+        )}
+        {user && <NavigateButton onClick={logOutUser} label="Logout" />}
       </div>
 
       <div>

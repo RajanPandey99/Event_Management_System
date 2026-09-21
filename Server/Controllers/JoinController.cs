@@ -40,7 +40,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEventsByJoin([FromHeader] string? Id)
+        public async Task<IActionResult> GetJoinedEvents([FromHeader] string? Id)
         {
             if (string.IsNullOrEmpty(Id))
             {
@@ -60,6 +60,42 @@ namespace Server.Controllers
             {
                 return BadRequest(new { Message = "Unable to retrieve joined events" });
             }
+        }
+        
+        [HttpDelete("{eventId}")]
+        public async Task<IActionResult> LeaveEvent(int eventId, [FromHeader] string? Id)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                return Unauthorized(new { Message = "User is not authenticated" });
+            }
+            int userId = int.Parse(Id);
+            try
+            {
+                ApiResponse response = await _joinService.LeaveEvent(eventId, userId);
+                if (!response.isSuccess)
+                {
+                    return BadRequest(new { response.Message });
+                }
+                return Ok(new { response.Message });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { Message = "Unable to leave event" });
+            }
+        }
+
+
+        [HttpGet("joinedevents")]
+        public async Task<IActionResult> GetJoinedEventIds([FromHeader] string? Id)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                return Unauthorized(new { Message = "User is not authenticated" });
+            }
+            int userId = int.Parse(Id);
+            List<int> eventIds = await _joinService.getJoinedEventIds(userId);
+            return Ok(eventIds);
         }
     }
 }

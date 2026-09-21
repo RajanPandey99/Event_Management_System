@@ -6,8 +6,11 @@ import type { ApiResponse } from "../Types/ApiResponse";
 import { post } from "../Services/api";
 import type { UserNamespace } from "../Types/User";
 import { getUser } from "../Services/getUser";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 export const AddEvent = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -18,15 +21,16 @@ export const AddEvent = () => {
   const user: UserNamespace.User = getUser();
   async function onSubmit(obj: Events.EventRequest) {
     if (user.id == -1) {
-      alert("Unauthorize to add Event !");
+      toast.error("Unauthorize to add Event !");
       return;
     }
-    const response: ApiResponse.apiresponse<string> = await post("event", obj);
+    const response: ApiResponse.apiresponse<string> = await post("event", obj, user.id);
     if (response.status != 200) {
-      alert("Unable to post event !");
+      toast.error(`Error ${response.message}`);
       return;
     }
-    alert("Event posted succesfully !");
+    toast.success("Event posted succesfully !");
+    navigate("/upcommingevents")
   }
   return (
     <div>

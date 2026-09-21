@@ -10,19 +10,14 @@ namespace Server.Controllers
     public sealed class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        public UserController(IUserService userService)   
         {
             _userService = userService;
         }
 
-
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { Message = "Invalid data" });
-            }
             try
             {
                ApiResponse response = await _userService.RegisterUser(request);
@@ -40,16 +35,12 @@ namespace Server.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginUserRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { Message = "Invalid data" });
-            }
             try
             {
                 var response = await _userService.LoginUser(request);
                 if (!response.isSuccess)
                 {
-                    return BadRequest(new { Message = response.Message });
+                    return BadRequest(new { Message = response.Message??"Something went wrong !" });
                 }
                 return Ok(response.User);
             }

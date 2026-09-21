@@ -29,6 +29,7 @@ export const EventsGrid = ({ events, onJoinEvent }: eventProps) => {
                 <JoinButton
                   eventId={event.id}
                   onClickEvent={() => onJoinEvent(event.id)}
+                  label="Join"
                 />
               )}
               <JoinedCount count={event.count} />

@@ -12,12 +12,12 @@ namespace Server.Services
         {
             _dbContext = context;
         }
-        
+
         public async Task<ApiResponse> JoinEvent(int eventId, int userId)
         {
             Joins? alreadyJoin = _dbContext.Joins.FirstOrDefault(j => j.userId == userId && j.eventId == eventId);
-            
-            if(alreadyJoin != null)
+
+            if (alreadyJoin != null)
             {
                 return new ApiResponse
                 {
@@ -26,7 +26,7 @@ namespace Server.Services
                 };
             }
             int createdBy = await _dbContext.Events.Where(e => e.Id == eventId).Select(e => e.CreatedBy).FirstOrDefaultAsync();
-            if(createdBy == userId)
+            if (createdBy == userId)
             {
                 return new ApiResponse
                 {
@@ -82,5 +82,46 @@ namespace Server.Services
             return events;
         }
 
+        public async Task<ApiResponse> LeaveEvent(int eventId, int userId)
+        {
+            try
+            {
+                Joins? join = _dbContext.Joins.FirstOrDefault(j => j.userId == userId && j.eventId == eventId);
+                if (join == null)
+                {
+                    return new ApiResponse
+                    {
+                        isSuccess = false,
+                        Message = "User has not joined the events "
+                    };
+                }
+                _dbContext.Joins.Remove(join);
+                _dbContext.SaveChanges();
+                return new ApiResponse
+                {
+                    isSuccess = true,
+                    Message = "User left the event successfully."
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse
+                {
+                    isSuccess = false,
+                    Message = $"An error occurred while leaving the event: {ex.Message}"
+                };
+            }
+
+        }
+
+        public async Task<List<int>> getJoinedEventIds(int userId)
+        {
+            List<int>? eventsId = await _dbContext.Joins
+                                          .Where(j => j.userId == userId)
+                                          .Select(e => e.eventId)
+                                          .ToListAsync();
+            return eventsId;
+        }
     }
 }

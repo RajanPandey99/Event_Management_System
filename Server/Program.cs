@@ -11,11 +11,12 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://localhost:5173")
+        builder.WithOrigins("https://localhost:5174")
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
 });
+builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<UserDbContext>(options =>
 {

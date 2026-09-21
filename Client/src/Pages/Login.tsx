@@ -4,6 +4,7 @@ import type { UserNamespace } from "../Types/User";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { loginScheme } from "../Schemas/UserScheme";
 import { post } from "../Services/api";
+import { toast } from "react-toastify";
 
 export const Login = () => {
   const {
@@ -18,7 +19,7 @@ export const Login = () => {
   async function onSumbit(data: UserNamespace.loginRequest) {
     const response = await post("user/login", data);
     if (!response.ok) {
-      alert(`Error : ${response.message}`);
+       toast.error(`Error:  ${response.message}`);
       return;
     }
     const Data = await response.data;
