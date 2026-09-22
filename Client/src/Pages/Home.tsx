@@ -3,11 +3,10 @@ import type { Events } from "../Types/Events";
 import { useNavigate } from "react-router";
 import type { UserNamespace } from "../Types/User";
 import { EventsGrid } from "../Components/EventsGrid";
-import { get, post } from "../Services/api";
+import { del, get, post } from "../Services/api";
 import { getUser } from "../Services/getUser";
 import { NavigateButton } from "../Components/NavigateButton";
 import { toast } from "react-toastify";
-
 
 export const Home = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
@@ -15,6 +14,7 @@ export const Home = () => {
     const data = getUser();
     return data.id != -1 ? data : null;
   });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export const Home = () => {
     }
     getEvents();
   }, []);
-  
+
   async function joinEvent(eventId: number) {
     const user: UserNamespace.User = getUser();
     if (user.id == -1) {
@@ -54,7 +54,31 @@ export const Home = () => {
         ),
       );
     } catch (error) {
-      alert(`Unable to join event ! ${error}`);
+      toast.error(`Unable to join event ! ${error}`);
+    }
+  }
+  async function leaveEvent(eventId: number) {
+    const user: UserNamespace.User = getUser();
+    if (user.id == -1) {
+      toast.error("UnAuthorized user !");
+      return;
+    }
+    try {
+      const response = await del(`join/${eventId}`, eventId, user.id);
+      if (response.status != 200) {
+        toast.error(`Error:  ${response.message}`);
+        return;
+      }
+
+      toast.success("Event leaved succesfully !");
+
+      setEvents((prevEvent) =>
+        prevEvent.map((e) =>
+          e.id == eventId ? { ...e, count: e.count - 1 } : e,
+        ),
+      );
+    } catch (error) {
+      toast.error(`Unable to join event ! ${error}`);
     }
   }
   function logOutUser() {
@@ -95,7 +119,11 @@ export const Home = () => {
               <h4>No Events for today</h4>
             </div>
           )}
-          <EventsGrid events={events} onJoinEvent={joinEvent} />
+          <EventsGrid
+            events={events}
+            onJoinEvent={joinEvent}
+            onLeaveEvent={leaveEvent}
+          />
         </div>
       </div>
     </div>

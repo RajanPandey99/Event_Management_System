@@ -1,13 +1,40 @@
+import { getUser } from "../Services/getUser";
 import type { Events } from "../Types/Events";
-import { JoinButton } from "./JoinButton";
-import { JoinedCount } from "./JoinedCount";
+import type { UserNamespace } from "../Types/User";
+import { JoinButton, JoinedCount } from "./Index";
+import { useState, useEffect} from "react";
+import { get } from "../Services/api";
+import { toast } from "react-toastify";
 
 interface eventProps {
   events: Events.EventResponse[];
   onJoinEvent?: (eventId: number) => void;
+  onLeaveEvent?: (eventId: number) => void;
 }
 
-export const EventsGrid = ({ events, onJoinEvent }: eventProps) => {
+export const EventsGrid = ({
+  events,
+  onJoinEvent,
+  onLeaveEvent,
+}: eventProps) => {
+  const user: UserNamespace.User = getUser();
+
+  const [joinedId, setJoinedIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    async function getJoinedIds() {
+      const response = await get<number[]>("join/joinedevents", user.id);
+
+      if (!response.ok) {
+        toast(`Something went wrong ${response.message}`);
+        return;
+      }
+
+      setJoinedIds(response.data ?? []);
+    }
+    getJoinedIds();
+  }, [user.id]);
+
   return (
     <div className="flex flex-row flex-wrap gap-2">
       {events &&
@@ -25,13 +52,22 @@ export const EventsGrid = ({ events, onJoinEvent }: eventProps) => {
 
             {event.description && <p>{event.description}</p>}
             <div className="flex flex-row gap-4">
-              {onJoinEvent && (
-                <JoinButton
-                  eventId={event.id}
-                  onClickEvent={() => onJoinEvent(event.id)}
-                  label="Join"
-                />
-              )}
+              {user.id !== -1 &&
+                (joinedId.includes(event.id)
+                  ? onLeaveEvent && (
+                      <JoinButton
+                        eventId={event.id}
+                        onClickEvent={() => onLeaveEvent(event.id)}
+                        label="Leave"
+                      />
+                    )
+                  : onJoinEvent && (
+                      <JoinButton
+                        eventId={event.id}
+                        onClickEvent={() => onJoinEvent(event.id)}
+                        label="Join"
+                      />
+                    ))}
               <JoinedCount count={event.count} />
             </div>
           </div>

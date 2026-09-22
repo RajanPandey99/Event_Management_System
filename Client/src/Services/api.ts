@@ -34,7 +34,7 @@ async function request<T>(
     body: body ? JSON.stringify(body) : undefined,
     headers,
   });
-  const data = await response.json();
+  const data = await response.json();    
   if (response.ok) {
     return {
       ok: response.ok,

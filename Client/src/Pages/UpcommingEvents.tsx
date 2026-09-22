@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { Events } from "../Types/Events";
 import type { UserNamespace } from "../Types/User";
 import { EventsGrid } from "../Components/EventsGrid";
-import { get, post } from "../Services/api";
+import { get, post, del } from "../Services/api";
 import { getUser } from "../Services/getUser";
 import { toast } from "react-toastify";
 
@@ -46,6 +46,32 @@ export const UpcommingEvents = () => {
     toast.success("Event joined succesfully !");
   }
 
+
+   async function leaveEvent(eventId: number) {
+      const user: UserNamespace.User = getUser();
+      if (user.id == -1) {
+        toast.error("UnAuthorized user !");
+        return;
+      }
+      try {
+        const response = await del(`join/${eventId}`, eventId, user.id);
+        if (response.status != 200) {
+          toast.error(`Error:  ${response.message}`);
+          return;
+        }
+  
+        toast.success("Event leaved succesfully !");
+  
+        setEvents((prevEvent) =>
+          prevEvent.map((e) =>
+            e.id == eventId ? { ...e, count: e.count - 1 } : e,
+          ),
+        );
+      } catch (error) {
+        toast.error(`Unable to join event ! ${error}`);
+      }
+    }
+
   return (
     <div className="w-full h-140 border-2 rounded-lg p-4 flex flex-col">
       <div className="flex flex-row gap-4 mb-4 shrink-0">
@@ -84,7 +110,7 @@ export const UpcommingEvents = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto border-t-2 pt-3">
-        <EventsGrid events={events} onJoinEvent={joinEvent} />
+        <EventsGrid events={events} onJoinEvent={joinEvent} onLeaveEvent={leaveEvent}/>
       </div>
     </div>
   );
