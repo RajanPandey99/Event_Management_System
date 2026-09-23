@@ -2,14 +2,14 @@ import { getUser } from "../Services/getUser";
 import type { Events } from "../Types/Events";
 import type { UserNamespace } from "../Types/User";
 import { JoinButton, JoinedCount } from "./Index";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { get } from "../Services/api";
 import { toast } from "react-toastify";
 
 interface eventProps {
   events: Events.EventResponse[];
-  onJoinEvent?: (eventId: number) => void;
-  onLeaveEvent?: (eventId: number) => void;
+  onJoinEvent?: (eventId: number) => Promise<boolean>;
+  onLeaveEvent?: (eventId: number) => Promise<boolean>;
 }
 
 export const EventsGrid = ({
@@ -35,6 +35,24 @@ export const EventsGrid = ({
     getJoinedIds();
   }, [user.id]);
 
+  async function leaveEvent(eventId: number) {
+    if(!onLeaveEvent) return;
+    const response: boolean = await onLeaveEvent(eventId);
+
+    if (response) {
+      setJoinedIds((prev) => prev.filter((e) => e !== eventId));
+    }
+  }
+
+    async function joinEvent(eventId: number) {
+    if(!onJoinEvent) return;
+    const response: boolean = await onJoinEvent(eventId);
+
+    if (response) {
+      setJoinedIds((prev) => [...prev, eventId]);
+    }
+  }
+
   return (
     <div className="flex flex-row flex-wrap gap-2">
       {events &&
@@ -57,14 +75,14 @@ export const EventsGrid = ({
                   ? onLeaveEvent && (
                       <JoinButton
                         eventId={event.id}
-                        onClickEvent={() => onLeaveEvent(event.id)}
+                        onClickEvent={() => leaveEvent(event.id)}
                         label="Leave"
                       />
                     )
                   : onJoinEvent && (
                       <JoinButton
                         eventId={event.id}
-                        onClickEvent={() => onJoinEvent(event.id)}
+                        onClickEvent={() => joinEvent(event.id)}
                         label="Join"
                       />
                     ))}

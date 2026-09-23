@@ -33,17 +33,17 @@ export const Home = () => {
     getEvents();
   }, []);
 
-  async function joinEvent(eventId: number) {
+  async function joinEvent(eventId: number): Promise<boolean>  {
     const user: UserNamespace.User = getUser();
     if (user.id == -1) {
       toast.error("UnAuthorized user !");
-      return;
+      return false;
     }
     try {
       const response = await post("join", eventId, user.id);
       if (response.status != 200) {
         toast.error(`Error:  ${response.message}`);
-        return;
+        return false;
       }
 
       toast.success("Event joined succesfully !");
@@ -53,21 +53,23 @@ export const Home = () => {
           e.id == eventId ? { ...e, count: e.count + 1 } : e,
         ),
       );
+      return true;
     } catch (error) {
       toast.error(`Unable to join event ! ${error}`);
+      return false;
     }
   }
-  async function leaveEvent(eventId: number) {
+  async function leaveEvent(eventId: number) : Promise<boolean> {
     const user: UserNamespace.User = getUser();
     if (user.id == -1) {
       toast.error("UnAuthorized user !");
-      return;
+      return false;
     }
     try {
       const response = await del(`join/${eventId}`, eventId, user.id);
       if (response.status != 200) {
         toast.error(`Error:  ${response.message}`);
-        return;
+        return false;
       }
 
       toast.success("Event leaved succesfully !");
@@ -77,8 +79,10 @@ export const Home = () => {
           e.id == eventId ? { ...e, count: e.count - 1 } : e,
         ),
       );
+      return true;
     } catch (error) {
       toast.error(`Unable to join event ! ${error}`);
+      return false;
     }
   }
   function logOutUser() {

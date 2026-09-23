@@ -11,4 +11,14 @@ export default defineConfig({
     mkcert(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server:{
+    port:5173,
+    strictPort:true
+  },
 })
+
+
+
+
+
+

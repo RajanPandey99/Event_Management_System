@@ -14,9 +14,6 @@ namespace Server.Services
         }   
         public async Task<ApiResponse> CreateEvent(CreateEventRequest request, int userId)
         { 
-
-
-
            Events newEvent = new Events
            {
                Title = request.Title,
