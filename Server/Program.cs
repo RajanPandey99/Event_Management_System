@@ -28,14 +28,13 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IJoinService, JoinService>();
 
 var app = builder.Build();
+app.UseHttpsRedirection();
+app.UseCors();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.UseCors();
-app.UseHttpsRedirection();
 
 app.MapControllers();
 

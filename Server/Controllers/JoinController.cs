@@ -15,15 +15,30 @@ namespace Server.Controllers
             _joinService = joinService;
         }
 
-
         [HttpPost]
         public async Task<IActionResult> JoinEvent([FromBody] int eventId, [FromHeader] string? Id)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (String.IsNullOrEmpty(Id))
             {
-                return Unauthorized(new { Message = "User is not authenticated" });
+                return Unauthorized("User is not authenticated !");
+            }
+            if (!CheckUser.ValidateUser(Id).isSuccess)
+            {
+                return BadRequest(new { Message = "Invalid User Id" });
             }
             int userId = int.Parse(Id);
+            try
+            {
+                userId = int.Parse(Id);
+            }
+            catch (FormatException)
+            {
+                return BadRequest(new { Message = "Invalid user id" });
+            }
+            catch (OverflowException)
+            {
+                return BadRequest(new { Message = "Invalid user id" });
+            }
             try
             {
                 ApiResponse response = await _joinService.JoinEvent(eventId, userId);
@@ -42,9 +57,13 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetJoinedEvents([FromHeader] string? Id)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (String.IsNullOrEmpty(Id))
             {
-                return Unauthorized(new { Message = "User is not authenticated" });
+                return Unauthorized("User is not authenticated !");
+            }
+            if (!CheckUser.ValidateUser(Id).isSuccess)
+            {
+                return BadRequest(new { Message = "Invalid User Id" });
             }
             int userId = int.Parse(Id);
             try
@@ -65,9 +84,13 @@ namespace Server.Controllers
         [HttpDelete("{eventId}")]
         public async Task<IActionResult> LeaveEvent(int eventId, [FromHeader] string? Id)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (String.IsNullOrEmpty(Id))
             {
-                return Unauthorized(new { Message = "User is not authenticated" });
+                return Unauthorized("User is not authenticated !");
+            }
+            if (!CheckUser.ValidateUser(Id).isSuccess)
+            {
+                return BadRequest(new { Message = "Invalid User Id" });
             }
             int userId = int.Parse(Id);
             try
@@ -89,9 +112,13 @@ namespace Server.Controllers
         [HttpGet("joinedevents")]
         public async Task<IActionResult> GetJoinedEventIds([FromHeader] string? Id)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (String.IsNullOrEmpty(Id))
             {
-                return Unauthorized(new { Message = "User is not authenticated" });
+                return Unauthorized("User is not authenticated !");
+            }
+            if (!CheckUser.ValidateUser(Id).isSuccess)
+            {
+                return BadRequest(new { Message = "Invalid User Id" });
             }
             int userId = int.Parse(Id);
             List<int> eventIds = await _joinService.getJoinedEventIds(userId);

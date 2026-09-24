@@ -15,6 +15,12 @@ namespace Server.Services
 
         public async Task<ApiResponse> JoinEvent(int eventId, int userId)
         {
+            Events? existEvent = await _dbContext.Events.Where(e => e.Id == eventId).FirstOrDefaultAsync();
+            User? existUser = await _dbContext.User.Where(u => u.Id == userId).FirstOrDefaultAsync();
+            if(existUser == null || existEvent == null)
+            {
+                return new ApiResponse { isSuccess = false, Message = "Invalid request" };
+            }
             Joins? alreadyJoin = _dbContext.Joins.FirstOrDefault(j => j.userId == userId && j.eventId == eventId);
 
             if (alreadyJoin != null)
@@ -25,8 +31,8 @@ namespace Server.Services
                     Message = "User has already joined this event."
                 };
             }
-            int createdBy = await _dbContext.Events.Where(e => e.Id == eventId).Select(e => e.CreatedBy).FirstOrDefaultAsync();
-            if (createdBy == userId)
+      
+            if (existEvent.CreatedBy == userId)
             {
                 return new ApiResponse
                 {

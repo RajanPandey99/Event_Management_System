@@ -37,7 +37,7 @@ namespace Server.Controllers
         {
             try
             {
-                var response = await _userService.LoginUser(request);
+               LoginUserResponse response = await _userService.LoginUser(request);
                 if (!response.isSuccess)
                 {
                     return BadRequest(new { Message = response.Message??"Something went wrong !" });

@@ -32,10 +32,10 @@ namespace Server.Services
                 Message = "Event created successfully." };  
         }
 
-       public async Task<List<EventResponse>?> GetEvenyByDateAndCategory(string? Category, DateOnly? Date)
+       public async Task<List<EventResponse>> GetEvenyByDateAndCategory(string? Category, DateOnly? Date)
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            List<EventResponse>? events = await _dbContext.Events
+            List<EventResponse> events = await _dbContext.Events
                               .Where(e => (Category == null || e.Category == Category) &&
                                           (Date == null || e.DateOfEvent == Date) && e.DateOfEvent >= today)
                                           .Select(e => new EventResponse
@@ -54,7 +54,7 @@ namespace Server.Services
             return events;
         }
 
-        public async Task<List<EventResponse>> getPostedEvents(int userId)
+        public async Task<List<EventResponse>> GetPostedEvents(int userId)
         {
             List<EventResponse>? events = await _dbContext.Events
                               .Where(e => e.CreatedBy == userId)

@@ -35,26 +35,23 @@ namespace Server.Services
                 Message = "User registered successfully"
             };
         }
-
         public async Task<LoginUserResponse> LoginUser(LoginUserRequest request)
         {
-           string? existEmail = _dbContext.User.Where(u => u.Email == request.Email).Select(u => u.Email).FirstOrDefault();
-            if (existEmail == null)
+            User? existUser = await _dbContext.User.Where(u => u.Email == request.Email).FirstOrDefaultAsync();
+            if (existUser == null)
             {
                 return new LoginUserResponse
                 {
                     isSuccess = false,
-                    Message = "Email does not exist",
+                    Message = "Invalid user ",
                 };
             }
 
-          string? existPassword = _dbContext.User.Where(u => u.Email == request.Email)
-                                  .Select(u => u.Password).FirstOrDefault();
-            if (existPassword == null || existPassword != request.Password) {
+            if (existUser.Password != request.Password) {
                 return new LoginUserResponse
                 {
                     isSuccess = false,
-                    Message = "Incorrect Password",
+                    Message = "Invalid user ",
                 };
             }
               
@@ -62,12 +59,12 @@ namespace Server.Services
             {
                 isSuccess = true,
                 Message = "Login Successful",
-                User = _dbContext.User.Where(u => u.Email == request.Email).Select(u => new UserResponse
+                User = new UserResponse
                 {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Email = u.Email
-                }).FirstOrDefault()
+                    Id = existUser.Id,
+                    Name = existUser.Name,
+                    Email = existUser.Email,
+                }
             };
         }
 

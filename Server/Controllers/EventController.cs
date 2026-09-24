@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Server.Services;
-using Server.DTOs;
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
 using Server.Common;
+using Server.DTOs;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -17,15 +18,15 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, [FromHeader] string? Id)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (String.IsNullOrEmpty(Id))
             {
-                return Unauthorized(new { Message = "User is not authenticated" });
+                return Unauthorized("User is not authenticated !");
+            }
+            if (!CheckUser.ValidateUser(Id).isSuccess)
+            {
+                return BadRequest(new { Message = "Invalid User Id" });
             }
             int userId = int.Parse(Id);
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { Message = "Invalid data" });
-            }
             try
             {
                 ApiResponse response = await _eventService.CreateEvent(request, userId);
@@ -47,12 +48,7 @@ namespace Server.Controllers
             try
             {
                 List<EventResponse>? events = await _eventService.GetEvenyByDateAndCategory(category, date);
-                if (events == null || events.Count == 0)
-                {
-                    List<EventResponse> emptyEvent = new();
-                    return Ok(emptyEvent);
-                }
-                return Ok(events);
+                return Ok(events ?? []);
             }
             catch (Exception)
             {
@@ -63,15 +59,18 @@ namespace Server.Controllers
         [HttpGet("posted")]
         public async Task<IActionResult> GetPostedEvents([FromHeader] string? Id)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (String.IsNullOrEmpty(Id))
             {
-                return Unauthorized(new { Message = "User is not authenticated" });
+                return Unauthorized("User is not authenticated !");
             }
-
+            if (!CheckUser.ValidateUser(Id).isSuccess)
+            {
+                return BadRequest(new { Message = "Invalid User Id" });
+            }
             int userId = int.Parse(Id);
             try
             {
-                List<EventResponse> events = await _eventService.getPostedEvents(userId);
+                List<EventResponse> events = await _eventService.GetPostedEvents(userId);
                 return Ok(events);
             }
             catch (Exception)
