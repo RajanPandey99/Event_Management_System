@@ -31,8 +31,8 @@ export const Login = () => {
       <form onSubmit={handleSubmit(onSumbit)} className="h-65 w-60 border-2">
         <h3 className="bg-blue-500 text-1xl mb-4">Login User</h3>
         <div>
-          <label>Email</label>
-          <input
+          <label htmlFor="email">Email</label>
+          <input id="email"
             {...register("email", { required: true })}
             placeholder="Enter your email"
             className="border-2 w-full"
@@ -41,9 +41,9 @@ export const Login = () => {
             <p className="text-red-700">{errors.email.message}</p>
           )}
 
-          <label>Password</label>
-          <input
-            {...register("password", { required: true })}
+          <label htmlFor="password">Password</label>
+          <input type="password" id="password"
+            {...register("password", { required: true, })}
             placeholder="Enter your password"
             className="border-2 w-full"
           />

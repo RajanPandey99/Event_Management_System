@@ -29,16 +29,16 @@ export const Register = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="h-65 w-60 border-2">
         <h3 className="bg-blue-500 text-1xl mb-4">Register User</h3>
         <div>
-          <label>Username</label>
-          <input
+          <label htmlFor="name">Username</label>
+          <input id="name"
             {...register("name", { required: true, maxLength: 20 })}
             placeholder="Enter your name"
             className="border-2 w-full"
           />
           {errors.name && <p className="text-red-700">{errors.name.message}</p>}
 
-          <label>Email</label>
-          <input
+          <label htmlFor="email">Email</label>
+          <input id="email"
             {...register("email", { required: true })}
             placeholder="Enter your email"
             className="border-2 w-full"
@@ -47,8 +47,8 @@ export const Register = () => {
             <p className="text-red-700">{errors.email.message}</p>
           )}
 
-          <label>Password</label>
-          <input
+          <label htmlFor="password">Password</label>
+          <input id="password"
             {...register("password", { required: true })}
             placeholder="Enter your password"
             className="border-2 w-full"
@@ -63,7 +63,7 @@ export const Register = () => {
             className="text-blue-500"
           >
             Login
-          </button>
+          </button>   
         </span>
         <button
           type="submit"

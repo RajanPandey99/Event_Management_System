@@ -61,7 +61,7 @@ export const EventsGrid = ({
             className="bg-blue-300 shadow-2xl rounded-2xl border-2 p-2 h-50"
             key={index}
           >
-            <h2>{event.title}</h2>
+            <h2>{event.title}</h2>       
 
             <p>Date: {event.dateOfEvent.toString()}</p>
             <p>Time: {event.timeOfEvent}</p>
@@ -72,7 +72,7 @@ export const EventsGrid = ({
             <div className="flex flex-row gap-4">
               {user.id !== -1 &&
                 (joinedId.includes(event.id)
-                  ? onLeaveEvent && (
+                  ? onLeaveEvent && (    
                       <JoinButton
                         eventId={event.id}
                         onClickEvent={() => leaveEvent(event.id)}

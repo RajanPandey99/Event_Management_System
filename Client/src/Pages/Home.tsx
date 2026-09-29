@@ -109,6 +109,10 @@ export const Home = () => {
           onClick={() => navigate("/upcommingevents")}
           label="View upcomming Events"
         />
+          <NavigateButton
+          onClick={() => navigate("/calander")}
+          label="Calander"
+        />
         {!user && (
           <NavigateButton onClick={() => navigate("/login")} label="Login" />
         )}

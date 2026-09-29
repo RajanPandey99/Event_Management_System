@@ -43,7 +43,7 @@ namespace Server.Services
                 return new LoginUserResponse
                 {
                     isSuccess = false,
-                    Message = "Invalid user ",
+                    Message = "Invalid cradentials ",
                 };
             }
 
@@ -51,7 +51,7 @@ namespace Server.Services
                 return new LoginUserResponse
                 {
                     isSuccess = false,
-                    Message = "Invalid user ",
+                    Message = "Invalid cradentials ",
                 };
             }
               

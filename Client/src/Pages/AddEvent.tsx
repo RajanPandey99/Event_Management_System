@@ -24,13 +24,17 @@ export const AddEvent = () => {
       toast.error("Unauthorize to add Event !");
       return;
     }
-    const response: ApiResponse.apiresponse<string> = await post("event", obj, user.id);
+    const response: ApiResponse.apiresponse<string> = await post(
+      "event",
+      obj,
+      user.id,
+    );
     if (response.status != 200) {
       toast.error(`Error ${response.message}`);
       return;
     }
     toast.success("Event posted succesfully !");
-    navigate("/upcommingevents")
+    navigate("/upcommingevents");
   }
   return (
     <div>

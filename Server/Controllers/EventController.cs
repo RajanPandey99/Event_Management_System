@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Server.Common;
 using Server.DTOs;
 using Server.Services;
@@ -18,7 +17,7 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, [FromHeader] string? Id)
         {
-            if (String.IsNullOrEmpty(Id))
+            if (String.IsNullOrEmpty(Id))   
             {
                 return Unauthorized("User is not authenticated !");
             }

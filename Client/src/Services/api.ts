@@ -21,8 +21,7 @@ async function request<T>(
   userId?: number,
 ): Promise<ApiResponse.apiresponse<T>> {
 
-  const headers: HeadersInit = {
-    Origin: window.location.host,
+  const headers: HeadersInit = {          
     "Content-Type": "application/json",
   };
 
@@ -35,6 +34,7 @@ async function request<T>(
     headers,
   });
   const data = await response.json();    
+
   if (response.ok) {
     return {
       ok: response.ok,
