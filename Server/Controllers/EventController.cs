@@ -41,12 +41,28 @@ namespace Server.Controllers
             }
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetEvents([FromQuery] string? category, [FromQuery] DateOnly? date)
+        public async Task<IActionResult> GetEvents([FromQuery] DateOnly? date)
         {
             try
             {
-                List<EventResponse>? events = await _eventService.GetEvenyByDateAndCategory(category, date);
+                List<EventResponse>? events = await _eventService.GetAllEvents(date);
+                return Ok(events ?? []);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { Message = "Unable to retrieve events" });
+            }
+        }
+
+
+        [HttpGet("upcomming")]
+        public async Task<IActionResult> GetUpCommingEvents([FromQuery] string? category, [FromQuery] DateOnly? date)
+        {
+            try
+            {
+                List<EventResponse>? events = await _eventService.GetUpCommingEvents(category, date);
                 return Ok(events ?? []);
             }
             catch (Exception)

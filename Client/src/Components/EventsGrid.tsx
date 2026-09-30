@@ -1,10 +1,10 @@
 import { getUser } from "../Services/getUser";
 import type { Events } from "../Types/Events";
 import type { UserNamespace } from "../Types/User";
-import { JoinButton, JoinedCount } from "./Index";
 import { useState, useEffect } from "react";
 import { get } from "../Services/api";
 import { toast } from "react-toastify";
+import { Button } from "rsuite";
 
 interface eventProps {
   events: Events.EventResponse[];
@@ -36,7 +36,7 @@ export const EventsGrid = ({
   }, [user.id]);
 
   async function leaveEvent(eventId: number) {
-    if(!onLeaveEvent) return;
+    if (!onLeaveEvent) return;
     const response: boolean = await onLeaveEvent(eventId);
 
     if (response) {
@@ -44,8 +44,8 @@ export const EventsGrid = ({
     }
   }
 
-    async function joinEvent(eventId: number) {
-    if(!onJoinEvent) return;
+  async function joinEvent(eventId: number) {
+    if (!onJoinEvent) return;
     const response: boolean = await onJoinEvent(eventId);
 
     if (response) {
@@ -58,10 +58,10 @@ export const EventsGrid = ({
       {events &&
         events.map((event, index) => (
           <div
-            className="bg-blue-300 shadow-2xl rounded-2xl border-2 p-2 h-50"
+            className="!bg-blue-300 !shadow-2xl !rounded-2xl !border-2 !p-2 !h-50"
             key={index}
           >
-            <h2>{event.title}</h2>       
+            <h2>{event.title}</h2>
 
             <p>Date: {event.dateOfEvent.toString()}</p>
             <p>Time: {event.timeOfEvent}</p>
@@ -69,24 +69,16 @@ export const EventsGrid = ({
             <p>Location: {event.location}</p>
 
             {event.description && <p>{event.description}</p>}
-            <div className="flex flex-row gap-4">
+            <div className="!flex !flex-row !gap-4">
               {user.id !== -1 &&
                 (joinedId.includes(event.id)
-                  ? onLeaveEvent && (    
-                      <JoinButton
-                        eventId={event.id}
-                        onClickEvent={() => leaveEvent(event.id)}
-                        label="Leave"
-                      />
+                  ? onLeaveEvent && (
+                      <Button onClick={()=>leaveEvent(event.id)} className="!bg-red-600 !w-20">Leave</Button>
                     )
                   : onJoinEvent && (
-                      <JoinButton
-                        eventId={event.id}
-                        onClickEvent={() => joinEvent(event.id)}
-                        label="Join"
-                      />
+                    <Button onClick={()=>joinEvent(event.id)} className="!bg-blue-600 !w-20">Join</Button>
                     ))}
-              <JoinedCount count={event.count} />
+                    <Button className="!bg-green-600">{event.count} People Joined</Button>
             </div>
           </div>
         ))}

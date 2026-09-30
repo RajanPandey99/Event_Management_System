@@ -5,10 +5,11 @@ import { formatDate } from "../Services/formatDate";
 import { ShowEvents } from "../Components/ShowEvents";
 import type { Events } from "../Types/Events";
 import { get } from "../Services/api";
+import { useNavigate } from "react-router";
 
 export const Calander = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     async function getEvents() {
       const response = await get<Events.EventResponse[]>(`event`);
@@ -26,6 +27,10 @@ export const Calander = () => {
     <>
       <Calendar
         bordered
+        onChange={(d) => {
+          const date = formatDate(d);
+          navigate(`/events/:${date}`);
+        }}
         renderCell={(date) => {
           const cellDate = formatDate(date);
 

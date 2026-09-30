@@ -56,7 +56,6 @@ export const Profile = () => {
           <h2 className="text-lg font-semibold">Events you have joined</h2>
     
            <EventsGrid events={joinedEvents}/>
-           
         </div>
       </div>
     </div>

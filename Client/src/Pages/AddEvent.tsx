@@ -8,6 +8,7 @@ import type { UserNamespace } from "../Types/User";
 import { getUser } from "../Services/getUser";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { Button } from "../Components/Button";
 
 export const AddEvent = () => {
   const navigate = useNavigate();
@@ -42,16 +43,16 @@ export const AddEvent = () => {
         <h2>Add Events</h2>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="h-65 w-60">
-        <label>Title</label>
-        <input
+        <label htmlFor="title">Title</label>
+        <input id="title"
           {...register("Title", { required: true })}
           placeholder="ex: football"
           className="border-2 w-full"
         />
         {errors.Title && <p className="text-red-700">{errors.Title.message}</p>}
 
-        <label>Date Of Event</label>
-        <input
+        <label htmlFor="doe">Date Of Event</label>
+        <input id="doe"
           type="date"
           {...register("DateOfEvent", { required: true })}
           placeholder="YYYY-MM-DD"
@@ -61,8 +62,8 @@ export const AddEvent = () => {
           <p className="text-red-700">{errors.DateOfEvent.message}</p>
         )}
 
-        <label>Time Of Event</label>
-        <input
+        <label htmlFor="toe">Time Of Event</label>
+        <input id="toe"
           {...register("TimeOfEvent", { required: true })}
           placeholder="HH:MM:SS"
           className="border-2 w-full"
@@ -71,8 +72,8 @@ export const AddEvent = () => {
           <p className="text-red-700">{errors.TimeOfEvent.message}</p>
         )}
 
-        <label>Category</label>
-        <select
+        <label htmlFor="category">Category</label>
+        <select id="category"
           {...register("Category", { required: true })}
           className="border-2 w-full"
         >
@@ -90,8 +91,8 @@ export const AddEvent = () => {
           <p className="text-red-700">{errors.Category.message}</p>
         )}
 
-        <label>Location</label>
-        <input
+        <label htmlFor="location">Location</label>
+        <input id="location"
           {...register("Location", { required: true })}
           placeholder="ex: Bhopal"
           className="border-2 w-full"
@@ -100,20 +101,12 @@ export const AddEvent = () => {
           <p className="text-red-700">{errors.Location.message}</p>
         )}
 
-        <label>Description</label>
-        <textarea {...register("Description")} className="border-2 w-full" />
+        <label htmlFor="description">Description</label>
+        <textarea id="description" {...register("Description")} className="border-2 w-full" />
         {errors.Description && (
           <p className="text-red-700">{errors.Description.message}</p>
         )}
-
-        <div className="flex justify-center items-center mt-5">
-          <button
-            type="submit"
-            className="h-10 w-35 rounded-2xl bg-blue-500 text-2xl"
-          >
-            Add Event
-          </button>
-        </div>
+          <Button type="submit">Add Event</Button>
       </form>
     </div>
   );

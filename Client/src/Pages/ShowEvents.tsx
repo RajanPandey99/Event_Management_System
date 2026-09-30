@@ -1,23 +1,22 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import type { Events } from "../Types/Events";
 import type { UserNamespace } from "../Types/User";
 import { EventsGrid } from "../Components/EventsGrid";
 import { get, post, del } from "../Services/api";
 import { getUser } from "../Services/getUser";
 import { toast } from "react-toastify";
 import { useParams } from "react-router";
+import type { Events } from "../Types/Events";
 
-export const UpcommingEvents = () => {
+export const ShowEvents = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
   const {date: urlDate} = useParams();
   const [date, setDate] = useState(urlDate?.split(":")[1] ?? "");
-  const [category, setCategory] = useState("");
 
   useEffect(() => {
     async function getEvents() {
       const response = await get<Events.EventResponse[]>(
-        `event/upcomming?date=${date}&category=${category}`,
+        `event/?date=${date}`,
       );
       if (!response.ok) {
         toast.error(`Error : ${response.message}`);
@@ -27,7 +26,7 @@ export const UpcommingEvents = () => {
       setEvents(events);
     }
     getEvents();
-  }, [date, category]);
+  }, [date]);
 
   async function joinEvent(eventId: number): Promise<boolean> {
     const user: UserNamespace.User = getUser();
@@ -77,45 +76,6 @@ export const UpcommingEvents = () => {
     }
 
   return (
-    <div className="w-full h-140 border-2 rounded-lg p-4 flex flex-col">
-      <div className="flex flex-row gap-4 mb-4 shrink-0">
-        <div className="flex flex-col">
-          <label className="font-medium mb-1">Category</label>
-
-          <select
-            name="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="border-2 rounded-md px-3 py-2 w-50"
-          >
-            <option value="">All Categories</option>
-            <option value="Games">Games</option>
-            <option value="Concert">Concert</option>
-            <option value="Dance">Dance</option>
-            <option value="Conference">Conference</option>
-            <option value="Workshop">Workshop</option>
-            <option value="Sports">Sports</option>
-            <option value="Exhibition">Exhibition</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col">
-          <label className="font-medium mb-1">Date</label>
-
-          <input
-            name="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            type="date"
-            className="border-2 rounded-md px-3 py-2 w-50"
-          />
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto border-t-2 pt-3">
         <EventsGrid events={events} onJoinEvent={joinEvent} onLeaveEvent={leaveEvent}/>
-      </div>
-    </div>
   );
 };

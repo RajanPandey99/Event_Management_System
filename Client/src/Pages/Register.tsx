@@ -5,6 +5,7 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import { registerSchema } from "../Schemas/UserScheme";
 import { post } from "../Services/api";
 import { toast } from "react-toastify";
+import { Button } from "../Components/Button";
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -60,17 +61,12 @@ export const Register = () => {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="text-blue-500"
+            className="!text-blue-500"
           >
             Login
           </button>   
         </span>
-        <button
-          type="submit"
-          className="mx-auto h-7 w-30 bg-blue-600 rounded-lg text-white"
-        >
-          Register
-        </button>
+        <Button type="submit">Register</Button>
       </form>
     </div>
   );

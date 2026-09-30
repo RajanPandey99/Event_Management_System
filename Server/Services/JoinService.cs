@@ -17,9 +17,16 @@ namespace Server.Services
         {
             Events? existEvent = await _dbContext.Events.Where(e => e.Id == eventId).FirstOrDefaultAsync();
             User? existUser = await _dbContext.User.Where(u => u.Id == userId).FirstOrDefaultAsync();
-            if(existUser == null || existEvent == null)
+            if (existUser == null || existEvent == null)
             {
                 return new ApiResponse { isSuccess = false, Message = "Invalid request" };
+            }
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            if (existEvent.DateOfEvent < today)
+            {
+                {
+                    return new ApiResponse { isSuccess = false, Message = "Cannot join past events !" };
+                }
             }
             Joins? alreadyJoin = _dbContext.Joins.FirstOrDefault(j => j.userId == userId && j.eventId == eventId);
 
@@ -31,7 +38,7 @@ namespace Server.Services
                     Message = "User has already joined this event."
                 };
             }
-      
+
             if (existEvent.CreatedBy == userId)
             {
                 return new ApiResponse
@@ -100,6 +107,12 @@ namespace Server.Services
                         isSuccess = false,
                         Message = "User has not joined the events "
                     };
+                }
+                DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+                Events? existEvent = await _dbContext.Events.Where(e => e.Id == eventId).FirstOrDefaultAsync();
+                if(existEvent != null && existEvent.DateOfEvent < today)
+                {
+                    return new ApiResponse { isSuccess = false, Message = "Cannot leave attened Event !" };
                 }
                 _dbContext.Joins.Remove(join);
                 _dbContext.SaveChanges();

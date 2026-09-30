@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from "react-router";
+import { Route, Routes, Navigate, useLocation } from "react-router";
 import "./App.css";
 import {
   Register,
@@ -7,16 +7,22 @@ import {
   AddEvent,
   Profile,
   UpcommingEvents,
-  Calander
+  Calander,
+  ShowEvents,
 } from "./Pages/Index";
 import { ToastContainer } from "react-toastify";
 import type { UserNamespace } from "./Types/User";
 import { getUser } from "./Services/getUser";
+import { Navbar } from "./Components/Navbar";
 
 function App() {
+  const location = useLocation();
   const user: UserNamespace.User = getUser();
+  const hideNavbar =
+    location.pathname === "/login" || location.pathname === "/";
   return (
     <>
+      {!hideNavbar && <Navbar />}
       <ToastContainer />
       <Routes>
         {user.id != -1 ? (
@@ -32,7 +38,8 @@ function App() {
         <Route path="/home" element={<Home />} />
 
         <Route path="/upcommingevents" element={<UpcommingEvents />} />
-        <Route path="/calander" element={<Calander/>}/>
+        <Route path="/events/:date?" element={<ShowEvents />} />
+        <Route path="/calander" element={<Calander />} />
       </Routes>
     </>
   );

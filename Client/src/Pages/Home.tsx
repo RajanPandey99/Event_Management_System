@@ -1,27 +1,18 @@
 import { useEffect, useState } from "react";
 import type { Events } from "../Types/Events";
-import { useNavigate } from "react-router";
 import type { UserNamespace } from "../Types/User";
 import { EventsGrid } from "../Components/EventsGrid";
 import { del, get, post } from "../Services/api";
 import { getUser } from "../Services/getUser";
-import { NavigateButton } from "../Components/NavigateButton";
 import { toast } from "react-toastify";
 
 export const Home = () => {
   const [events, setEvents] = useState<Events.EventResponse[]>([]);
-  const [user, setUser] = useState<UserNamespace.User | null>(() => {
-    const data = getUser();
-    return data.id != -1 ? data : null;
-  });
-
-  const navigate = useNavigate();
-
   useEffect(() => {
     async function getEvents() {
       const todaysDate = new Date().toLocaleDateString("en-CA");
       const response = await get<Events.EventResponse[]>(
-        `event?date=${todaysDate}`,
+        `event/upcomming?date=${todaysDate}`,
       );
       if (!response.ok) {
         alert("Unable to fetch events");
@@ -85,40 +76,8 @@ export const Home = () => {
       return false;
     }
   }
-  function logOutUser() {
-    localStorage.removeItem("userData");
-    setUser(null);
-    toast.success("User log out succesfully !");
-  }
   return (
     <div>
-      <div className="h-30 w-full flex items-center justify-center gap-5">
-        {user && (
-          <NavigateButton
-            onClick={() => navigate("/addevent")}
-            label="Add Event"
-          />
-        )}
-        {user && (
-          <NavigateButton
-            onClick={() => navigate("/profile")}
-            label="View your Profile"
-          />
-        )}
-        <NavigateButton
-          onClick={() => navigate("/upcommingevents")}
-          label="View upcomming Events"
-        />
-          <NavigateButton
-          onClick={() => navigate("/calander")}
-          label="Calander"
-        />
-        {!user && (
-          <NavigateButton onClick={() => navigate("/login")} label="Login" />
-        )}
-        {user && <NavigateButton onClick={logOutUser} label="Logout" />}
-      </div>
-
       <div>
         <h3 className="text-3xl font-bold">Todays Events..</h3>
         <div className="flex flex-row">
