@@ -7,17 +7,18 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("api/event")]
-    public class EventController :ControllerBase
+    public class EventController : ControllerBase
     {
         private readonly IEventService _eventService;
         public EventController(IEventService eventService)
         {
             _eventService = eventService;
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, [FromHeader] string? Id)
         {
-            if (String.IsNullOrEmpty(Id))   
+            if (String.IsNullOrEmpty(Id))
             {
                 return Unauthorized("User is not authenticated !");
             }
@@ -41,7 +42,6 @@ namespace Server.Controllers
             }
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetEvents([FromQuery] DateOnly? date)
         {
@@ -55,7 +55,6 @@ namespace Server.Controllers
                 return BadRequest(new { Message = "Unable to retrieve events" });
             }
         }
-
 
         [HttpGet("upcomming")]
         public async Task<IActionResult> GetUpCommingEvents([FromQuery] string? category, [FromQuery] DateOnly? date)
@@ -91,6 +90,21 @@ namespace Server.Controllers
             catch (Exception)
             {
                 return BadRequest(new { Message = "Unable to retrieve posted events" });
+            }
+        }
+
+
+        [HttpGet("inrange")]
+        public async Task<IActionResult> GetEvents([FromQuery] DateOnly start, [FromQuery] DateOnly end)
+        {
+            try
+            {
+                List<EventResponse>? events = await _eventService.GetEventsInRange(start, end);
+                return Ok(events ?? []);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { Message = "Unable to retrieve events" });
             }
         }
     }

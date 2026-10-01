@@ -83,7 +83,7 @@ namespace Server.Services
 
         public async Task<List<EventResponse>> GetPostedEvents(int userId)
         {
-            List<EventResponse>? events = await _dbContext.Events
+            List<EventResponse> events = await _dbContext.Events
                               .Where(e => e.CreatedBy == userId)
                               .Select(e => new EventResponse
                               {
@@ -97,11 +97,27 @@ namespace Server.Services
                                   Count = _dbContext.Joins.Count(je => je.eventId == e.Id)
                               })
                               .ToListAsync();
-            if (events == null)
-            {
-                List<EventResponse> response = new();
-                return response;
-            }
+            return events;
+        }
+
+        public async Task<List<EventResponse>> GetEventsInRange(DateOnly start, DateOnly end)
+        {
+            List<EventResponse> events = await _dbContext.Events
+                              .Where(e => (start <= e.DateOfEvent) &&
+                                          (e.DateOfEvent <= end))
+                                          .Select(e => new EventResponse
+                                          {
+                                              Id = e.Id,
+                                              Title = e.Title,
+                                              DateOfEvent = e.DateOfEvent,
+                                              TimeOfEvent = e.TimeOfEvent,
+                                              Category = e.Category,
+                                              Location = e.Location,
+                                              Description = e.Description ?? "",
+                                              Count = _dbContext.Joins.Count(je => je.eventId == e.Id)
+                                          })
+                                          .ToListAsync();
+
             return events;
         }
     }
