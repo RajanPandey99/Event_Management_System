@@ -29,7 +29,6 @@ export const EventsGrid = ({
         toast(`Something went wrong ${response.message}`);
         return;
       }
-
       setJoinedIds(response.data ?? []);
     }
     getJoinedIds();
@@ -55,13 +54,17 @@ export const EventsGrid = ({
 
   return (
     <div className="flex flex-row flex-wrap gap-2">
-      {events &&
+      {events.length === 0 ? (
+        <p className="w-full text-center text-4xl text-gray-500">
+          No events for this date
+        </p>
+      ) : (
         events.map((event, index) => (
           <div
-            className="!bg-blue-300 !shadow-2xl !rounded-2xl !border-2 !p-2 !h-50"
+            className="bg-blue-300! shadow-2xl! rounded-2xl! border-2! p-2! h-50!"
             key={index}
           >
-            <h2>{event.title}</h2>
+            <h4>{event.title}</h4>
 
             <p>Date: {event.dateOfEvent.toString()}</p>
             <p>Time: {event.timeOfEvent}</p>
@@ -69,19 +72,34 @@ export const EventsGrid = ({
             <p>Location: {event.location}</p>
 
             {event.description && <p>{event.description}</p>}
-            <div className="!flex !flex-row !gap-4">
+
+            <div className="flex! flex-row! gap-4!">
               {user.id !== -1 &&
                 (joinedId.includes(event.id)
                   ? onLeaveEvent && (
-                      <Button onClick={()=>leaveEvent(event.id)} className="!bg-red-600 !w-20">Leave</Button>
+                      <Button
+                        onClick={() => leaveEvent(event.id)}
+                        className="bg-red-600! w-20!"
+                      >
+                        Leave
+                      </Button>
                     )
                   : onJoinEvent && (
-                    <Button onClick={()=>joinEvent(event.id)} className="!bg-blue-600 !w-20">Join</Button>
+                      <Button
+                        onClick={() => joinEvent(event.id)}
+                        className="bg-blue-600! w-20!"
+                      >
+                        Join
+                      </Button>
                     ))}
-                    <Button className="!bg-green-600">{event.count} People Joined</Button>
+
+              <Button className="bg-green-600!">
+                {event.count} People Joined
+              </Button>
             </div>
           </div>
-        ))}
+        ))
+      )}
     </div>
   );
 };

@@ -61,7 +61,7 @@ export const Register = () => {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="!text-blue-500"
+            className="text-blue-500!"
           >
             Login
           </button>   

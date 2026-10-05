@@ -20,7 +20,7 @@ export const Login = () => {
   async function onSumbit(data: UserNamespace.loginRequest) {
     const response = await post("user/login", data);
     if (!response.ok) {
-       toast.error(`Error:  ${response.message}`);
+      toast.error(`Error:  ${response.message}`);
       return;
     }
     const Data = await response.data;
@@ -33,7 +33,8 @@ export const Login = () => {
         <h3 className="bg-blue-500 text-1xl mb-4">Login User</h3>
         <div>
           <label htmlFor="email">Email</label>
-          <input id="email"
+          <input
+            id="email"
             {...register("email", { required: true })}
             placeholder="Enter your email"
             className="border-2 w-full"
@@ -43,8 +44,10 @@ export const Login = () => {
           )}
 
           <label htmlFor="password">Password</label>
-          <input type="password" id="password"
-            {...register("password", { required: true, })}
+          <input
+            type="password"
+            id="password"
+            {...register("password", { required: true })}
             placeholder="Enter your password"
             className="border-2 w-full"
           />
@@ -57,7 +60,7 @@ export const Login = () => {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="!text-blue-500"
+            className="text-blue-500!"
           >
             Register
           </button>

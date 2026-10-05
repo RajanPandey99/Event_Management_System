@@ -20,7 +20,7 @@ export const Button = <T,>({
           onClick();
         }
       }}
-      className={`mx-auto h-7 w-30 !rounded-lg bg-blue-600 ${className}`}
+      className={`mx-auto h-7 w-30 rounded-lg! bg-blue-600 ${className}`}
     >
       {children}
     </button>

@@ -42,6 +42,7 @@ namespace Server.Controllers
             }
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetEvents([FromQuery] DateOnly? date)
         {
@@ -55,6 +56,22 @@ namespace Server.Controllers
                 return BadRequest(new { Message = "Unable to retrieve events" });
             }
         }
+
+        [HttpGet("inrange")]
+        public async Task<IActionResult> GetEvents([FromQuery] DateOnly start, [FromQuery] DateOnly end)
+        {
+            try
+            {
+                List<EventResponse>? events = await _eventService.GetEventsInRange(start, end);
+                return Ok(events ?? []);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { Message = "Unable to retrieve events" });
+            }
+        }
+
+
 
         [HttpGet("upcomming")]
         public async Task<IActionResult> GetUpCommingEvents([FromQuery] string? category, [FromQuery] DateOnly? date)
@@ -93,19 +110,5 @@ namespace Server.Controllers
             }
         }
 
-
-        [HttpGet("inrange")]
-        public async Task<IActionResult> GetEvents([FromQuery] DateOnly start, [FromQuery] DateOnly end)
-        {
-            try
-            {
-                List<EventResponse>? events = await _eventService.GetEventsInRange(start, end);
-                return Ok(events ?? []);
-            }
-            catch (Exception)
-            {
-                return BadRequest(new { Message = "Unable to retrieve events" });
-            }
-        }
     }
 }

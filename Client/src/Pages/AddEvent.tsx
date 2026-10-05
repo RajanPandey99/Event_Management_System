@@ -44,7 +44,8 @@ export const AddEvent = () => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="h-65 w-60">
         <label htmlFor="title">Title</label>
-        <input id="title"
+        <input
+          id="title"
           {...register("Title", { required: true })}
           placeholder="ex: football"
           className="border-2 w-full"
@@ -52,7 +53,8 @@ export const AddEvent = () => {
         {errors.Title && <p className="text-red-700">{errors.Title.message}</p>}
 
         <label htmlFor="doe">Date Of Event</label>
-        <input id="doe"
+        <input
+          id="doe"
           type="date"
           {...register("DateOfEvent", { required: true })}
           placeholder="YYYY-MM-DD"
@@ -63,7 +65,8 @@ export const AddEvent = () => {
         )}
 
         <label htmlFor="toe">Time Of Event</label>
-        <input id="toe"
+        <input
+          id="toe"
           {...register("TimeOfEvent", { required: true })}
           placeholder="HH:MM:SS"
           className="border-2 w-full"
@@ -73,7 +76,8 @@ export const AddEvent = () => {
         )}
 
         <label htmlFor="category">Category</label>
-        <select id="category"
+        <select
+          id="category"
           {...register("Category", { required: true })}
           className="border-2 w-full"
         >
@@ -92,7 +96,8 @@ export const AddEvent = () => {
         )}
 
         <label htmlFor="location">Location</label>
-        <input id="location"
+        <input
+          id="location"
           {...register("Location", { required: true })}
           placeholder="ex: Bhopal"
           className="border-2 w-full"
@@ -102,11 +107,15 @@ export const AddEvent = () => {
         )}
 
         <label htmlFor="description">Description</label>
-        <textarea id="description" {...register("Description")} className="border-2 w-full" />
+        <textarea
+          id="description"
+          {...register("Description")}
+          className="border-2 w-full"
+        />
         {errors.Description && (
           <p className="text-red-700">{errors.Description.message}</p>
         )}
-          <Button type="submit">Add Event</Button>
+        <Button type="submit">Add Event</Button>
       </form>
     </div>
   );

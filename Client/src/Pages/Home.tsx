@@ -81,11 +81,6 @@ export const Home = () => {
       <div>
         <h3 className="text-3xl font-bold">Todays Events..</h3>
         <div className="flex flex-row">
-          {events.length == 0 && (
-            <div>
-              <h4>No Events for today</h4>
-            </div>
-          )}
           <EventsGrid
             events={events}
             onJoinEvent={joinEvent}
