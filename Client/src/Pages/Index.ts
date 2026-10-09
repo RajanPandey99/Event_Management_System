@@ -7,4 +7,13 @@ import { UpcommingEvents } from "./UpcommingEvents";
 import { Calander } from "./Calander";
 import { ShowEvents } from "./ShowEvents";
 
-export {AddEvent, Home, Login, Profile, Register, UpcommingEvents, Calander, ShowEvents}
+export {
+  AddEvent,
+  Home,
+  Login,
+  Profile,
+  Register,
+  UpcommingEvents,
+  Calander,
+  ShowEvents,
+};

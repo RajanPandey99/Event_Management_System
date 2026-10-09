@@ -1,93 +1,44 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import type { UserNamespace } from "../Types/User";
 import { EventsGrid } from "../Components/EventsGrid";
-import { get, post, del } from "../Services/api";
-import { getUser } from "../Services/getUser";
+import { get } from "../Services/api";
 import { toast } from "react-toastify";
 import { useParams } from "react-router";
 import type { Events } from "../Types/Events";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { JoinEvent, LeaveEvent } from "../Services/EventService";
 
 export const ShowEvents = () => {
-  const [events, setEvents] = useState<Events.EventResponse[]>([]);
+  const queryClient = useQueryClient();
   const { date: urlDate, end: urlEnd } = useParams();
 
-  useEffect(() => {
-    async function getEvents() {
+  const { data: events = [] } = useQuery<Events.EventResponse[]>({
+    queryKey: ["events", urlDate, urlEnd],
+
+    queryFn: async () => {
+      let response;
+
       if (urlEnd) {
-        const response = await get<Events.EventResponse[]>(
+        response = await get<Events.EventResponse[]>(
           `event/inrange?start=${urlDate}&end=${urlEnd}`,
         );
-        if (!response.ok) {
-          toast.error(`Error : ${response.message}`);
-          return;
-        }
-        const events = response.data ?? [];
-        setEvents(events);
       } else {
-        console.log(`get request in this URL : event/?date=${urlDate}`);
-        const response = await get<Events.EventResponse[]>(
-          `event/?date=${urlDate}`,
-        );
-
-        if (!response.ok) {
-          toast.error(`Error : ${response.message}`);
-          return;
-        }
-        const events = response.data ?? [];
-        setEvents(events);
+        response = await get<Events.EventResponse[]>(`event/?date=${urlDate}`);
       }
-    }
-    getEvents();
-  }, [urlDate, urlEnd]);
+      if (!response.ok) {
+        toast.error(response.message || "Unable to fetch events");
+      }
+      return response.data ?? [];
+    },
+
+    enabled: Boolean(urlDate),
+  });
 
   async function joinEvent(eventId: number): Promise<boolean> {
-    const user: UserNamespace.User = getUser();
-    if (user.id == -1) {
-      toast.error("You need to login first to join event !");
-      return false;
-    }
-    const response = await post("join", eventId, user.id);
-    if (!response.ok) {
-      toast.error(`Error : ${response.message}`);
-      return false;
-    }
-    setEvents((prevEvent) =>
-      prevEvent.map((e) =>
-        e.id == eventId ? { ...e, count: e.count + 1 } : e,
-      ),
-    );
-    toast.success("Event joined succesfully !");
-    return true;
+    return JoinEvent(eventId, queryClient);
   }
 
   async function leaveEvent(eventId: number): Promise<boolean> {
-    const user: UserNamespace.User = getUser();
-    if (user.id == -1) {
-      toast.error("UnAuthorized user !");
-      return false;
-    }
-    try {
-      const response = await del(`join/${eventId}`, eventId, user.id);
-      if (response.status != 200) {
-        toast.error(`Error:  ${response.message}`);
-        return false;
-      }
-
-      toast.success("Event leaved succesfully !");
-
-      setEvents((prevEvent) =>
-        prevEvent.map((e) =>
-          e.id == eventId ? { ...e, count: e.count - 1 } : e,
-        ),
-      );
-      return true;
-    } catch (error) {
-      toast.error(`Unable to join event ! ${error}`);
-      return false;
-    }
+    return LeaveEvent(eventId, queryClient);
   }
-
   return (
     <EventsGrid
       events={events}

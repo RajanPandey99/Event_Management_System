@@ -1,45 +1,42 @@
-import { useEffect, useState } from "react";
 import type { UserNamespace } from "../Types/User";
 import type { Events } from "../Types/Events";
 import { EventsGrid } from "../Components/EventsGrid";
 import { get } from "../Services/api";
 import { getUser } from "../Services/getUser";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
 
 export const Profile = () => {
-  const user : UserNamespace.User = getUser();
-  const [postedevents, setPostedevents] = useState<Events.EventResponse[]>([]);
-  const [joinedEvents, setJoinedevents] = useState<Events.EventResponse[]>(
-    [],
-  );
+  const user: UserNamespace.User = getUser();
+  const { data: postedevents = [] } = useQuery<Events.EventResponse[]>({
+    queryKey: ["postedevents"],
 
-  async function getPostedEvents() {
-    const response = await get<Events.EventResponse[]>("event/posted", user.id);
-     if (!response.ok) {
-        toast.error(`Error ${response.message}`);
-        return;
-      }
-      const event = response.data ?? [];
-      setPostedevents(event);
-  }
+    queryFn: async () => {
+      const response = await get<Events.EventResponse[]>(
+        "event/posted",
+        user.id,
+      );
 
-  async function geJoinedEvents() {
-    const response = await get<Events.EventResponse[]>("join", user.id);
       if (!response.ok) {
         toast.error(`Error ${response.message}`);
-        return;
       }
-      const event = response.data ?? [];
-      setJoinedevents(event);
-  }
 
-  useEffect(() => {
-    async function loadData() {
-      await getPostedEvents();
-      await geJoinedEvents();
-    }
-    loadData();
-  }, []);  
+      return response.data ?? [];
+    },
+  });
+
+  const { data: joinedEvents = [] } = useQuery<Events.EventResponse[]>({
+    queryKey: ["joinedEvents"],
+
+    queryFn: async () => {
+      const response = await get<Events.EventResponse[]>("join", user.id);
+
+      if (!response.ok) {
+        toast.error(`Error ${response.message}`);
+      }
+      return response.data ?? [];
+    },
+  });
 
   return (
     <div>
@@ -49,13 +46,13 @@ export const Profile = () => {
       <div className="w-full h-[70%] flex gap-2">
         <div className="h-full flex-1 border-2 rounded p-4">
           <h2 className="text-lg font-semibold">Events you posted</h2>
-          <EventsGrid events={postedevents}/>
+          <EventsGrid events={postedevents} />
         </div>
 
         <div className="h-full w-50 flex-1 border-2 rounded p-4">
           <h2 className="text-lg font-semibold">Events you have joined</h2>
-    
-           <EventsGrid events={joinedEvents}/>
+
+          <EventsGrid events={joinedEvents} />
         </div>
       </div>
     </div>

@@ -31,7 +31,8 @@ export const Register = () => {
         <h3 className="bg-blue-500 text-1xl mb-4">Register User</h3>
         <div>
           <label htmlFor="name">Username</label>
-          <input id="name"
+          <input
+            id="name"
             {...register("name", { required: true, maxLength: 20 })}
             placeholder="Enter your name"
             className="border-2 w-full"
@@ -39,7 +40,8 @@ export const Register = () => {
           {errors.name && <p className="text-red-700">{errors.name.message}</p>}
 
           <label htmlFor="email">Email</label>
-          <input id="email"
+          <input
+            id="email"
             {...register("email", { required: true })}
             placeholder="Enter your email"
             className="border-2 w-full"
@@ -49,7 +51,8 @@ export const Register = () => {
           )}
 
           <label htmlFor="password">Password</label>
-          <input id="password"
+          <input
+            id="password"
             {...register("password", { required: true })}
             placeholder="Enter your password"
             className="border-2 w-full"
@@ -64,7 +67,7 @@ export const Register = () => {
             className="text-blue-500!"
           >
             Login
-          </button>   
+          </button>
         </span>
         <Button type="submit">Register</Button>
       </form>

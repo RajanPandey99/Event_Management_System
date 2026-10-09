@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Calendar } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
 import { formatDate } from "../Services/formatDate";
@@ -7,11 +7,12 @@ import type { Events } from "../Types/Events";
 import { get } from "../Services/api";
 import { useNavigate } from "react-router";
 import { Button } from "../Components/Button";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export const Calander = () => {
-  const [events, setEvents] = useState<Events.EventResponse[]>([]);
   const navigate = useNavigate();
-  const [currentWeek] = useState<string[]>(() =>{
+  const [currentWeek] = useState<string[]>(() => {
     const today = new Date();
     const day = today.getDay();
 
@@ -23,24 +24,23 @@ export const Calander = () => {
     for (let i = 0; i < 7; i++) {
       const date = new Date(startOfWeek);
       date.setDate(startOfWeek.getDate() + i);
-
       dates.push(formatDate(date));
     }
-   return dates;
+    return dates;
   });
 
-  useEffect(() => {
-    async function getEvents() {
+  const { data: events = [] } = useQuery<Events.EventResponse[]>({
+    queryKey: ["calanderEvents"],
+    queryFn: async () => {
       const response = await get<Events.EventResponse[]>(`event`);
 
       if (!response.ok) {
-        setEvents([]);
-        return;
+        toast.error("Unable to fetch Calander events !");
+        return [];
       }
-      setEvents(response.data ?? []);
-    }
-    getEvents();
-  }, []);
+      return response.data ?? [];
+    },
+  });
 
   function handleWeek() {
     navigate(`/events/${currentWeek[0]}/${currentWeek[6]}`);
